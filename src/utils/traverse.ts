@@ -1,17 +1,40 @@
-export function traverse(ast: any, visitors: any) {
-  function walkNode(node: any, parent: any) {
-    const method = visitors[node.type];
-    if (method) {
-      method(node, parent);
-    }
-    if (node.type === "Program") {
-      walkNodes(node.body, node);
-    } else if (node.type === "CallExpression") {
-      walkNodes(node.params, node);
-    }
+import type { ASTNode, ProgramNode } from "../type";
+
+type NodeVisitor<T extends ASTNode> = (node: T, parent: ASTNode | null) => void;
+type NodeVisitors = {
+  [K in ASTNode["type"]]?: NodeVisitor<Extract<ASTNode, { type: K }>>;
+};
+
+export function traverse(ast: ProgramNode, visitors: NodeVisitors) {
+  visitNode(ast, null, visitors);
+}
+
+function visitNode<T extends ASTNode>(
+  node: T,
+  parent: ASTNode | null,
+  visitors: NodeVisitors
+) {
+  const visitor = visitors[node.type] as NodeVisitor<T> | undefined;
+
+  if (visitor) {
+    visitor(node, parent);
   }
-  function walkNodes(nodes: any, parent: any) {
-    nodes.forEach((node: any) => walkNode(node, parent));
+
+  switch (node.type) {
+    case "Program":
+      visitNodes(node.body, node, visitors);
+      break;
+    case "CallExpression":
+      visitNodes(node.params, node, visitors);
+      break;
+    case "NumberLiteral":
+      // NumberLiteral has no children to visit
+      break;
+    default:
+      throw new Error(`Unknown AST node type: ${node}`);
   }
-  walkNode(ast, null);
+}
+
+function visitNodes(nodes: ASTNode[], parent: ASTNode, visitors: NodeVisitors) {
+  nodes.forEach((node) => visitNode(node, parent, visitors));
 }
