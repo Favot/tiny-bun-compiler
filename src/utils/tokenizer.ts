@@ -1,8 +1,12 @@
+import type { Token } from "../type";
+
 const LETTERS = /[a-z]/i;
 const WHITESPACE = /\s/;
 const NUMBERS = /\d/;
-export function tokenizer(input: string) {
-  const tokens = [];
+
+export function tokenizer(input: string): Token[] {
+  const tokens: Token[] = [];
+
   let current = 0;
   while (current < input.length) {
     let char = input[current];
