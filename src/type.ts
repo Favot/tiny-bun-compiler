@@ -1,5 +1,7 @@
+export type TokenType = "paren" | "name" | "number";
+
 export type Token = {
-  type: "paren" | "name" | "number";
+  type: TokenType;
   value: string;
 };
 

@@ -1,4 +1,6 @@
-import type { Token } from "../type";
+// Define the Token type if not already existing
+
+import type { Token, TokenType } from "../type";
 
 const LETTERS = /[a-z]/i;
 const WHITESPACE = /\s/;
@@ -6,47 +8,75 @@ const NUMBERS = /\d/;
 
 export function tokenizer(input: string): Token[] {
   const tokens: Token[] = [];
+  let currentIndex = 0;
 
-  let current = 0;
-  while (current < input.length) {
-    let char = input[current];
-    if (char === "(" || char === ")") {
-      tokens.push({
-        type: "paren",
-        value: char,
-      });
-      current++;
+  while (currentIndex < input.length) {
+    let character = input[currentIndex];
+
+    if (character === "(" || character === ")") {
+      tokens.push(parseParenthesisToken(character));
+      currentIndex++;
       continue;
     }
-    if (LETTERS.test(char)) {
-      let value = "";
-      while (LETTERS.test(char)) {
-        value += char;
-        char = input[++current];
-      }
-      tokens.push({
-        type: "name",
-        value,
-      });
+
+    if (LETTERS.test(character)) {
+      const { token, nextIndex } = parseToken(
+        input,
+        currentIndex,
+        LETTERS,
+        "name"
+      );
+      tokens.push(token);
+      currentIndex = nextIndex;
       continue;
     }
-    if (WHITESPACE.test(char)) {
-      current++;
+
+    if (NUMBERS.test(character)) {
+      const { token, nextIndex } = parseToken(
+        input,
+        currentIndex,
+        NUMBERS,
+        "number"
+      );
+      tokens.push(token);
+      currentIndex = nextIndex;
       continue;
     }
-    if (NUMBERS.test(char)) {
-      let value = "";
-      while (NUMBERS.test(char)) {
-        value += char;
-        char = input[++current];
-      }
-      tokens.push({
-        type: "number",
-        value,
-      });
+
+    if (WHITESPACE.test(character)) {
+      currentIndex++;
       continue;
     }
-    throw new TypeError(`Unknown char: '${char}'`);
+
+    // Handling unknown characters more explicitly
+    throw new TypeError(
+      `Unknown character: '${character}' at index ${currentIndex}`
+    );
   }
+
   return tokens;
+}
+
+function parseParenthesisToken(character: string): Token {
+  return { type: "parenthesis", value: character };
+}
+
+type ParseResult = { token: Token; nextIndex: number };
+
+function parseToken(
+  input: string,
+  startIndex: number,
+  regex: RegExp,
+  type: TokenType
+): ParseResult {
+  let value = "";
+  let currentIndex = startIndex;
+  let character = input[currentIndex];
+
+  while (regex.test(character) && currentIndex < input.length) {
+    value += character;
+    character = input[++currentIndex];
+  }
+
+  return { token: { type, value }, nextIndex: currentIndex };
 }
