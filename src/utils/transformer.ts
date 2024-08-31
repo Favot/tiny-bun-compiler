@@ -17,35 +17,35 @@ export function transformer(originalAST: ProgramNode) {
 
   let position = jsAST.body;
 
-  traverse(originalAST, {
-    NumberLiteral(node: NumberLiteralNode) {
-      handleNumberLiteral(node, position);
-    },
-    CallExpression(node: CallExpressionNode, parent: ASTNode) {
-      let expression = {
-        type: "CallExpression",
-        callee: {
-          type: "Identifier",
-          name: node.name,
-        },
-        arguments: [],
+  function handleCallExpression(node: CallExpressionNode, parent: ASTNode) {
+    let expression = {
+      type: "CallExpression",
+      callee: {
+        type: "Identifier",
+        name: node.name,
+      },
+      arguments: [],
+    };
+    const prevPosition = position;
+    position = expression.arguments;
+    if (parent.type !== "CallExpression") {
+      expression = {
+        type: "ExpressionStatement",
+        expression,
       };
-      const prevPosition = position;
-      position = expression.arguments;
-      if (parent.type !== "CallExpression") {
-        expression = {
-          type: "ExpressionStatement",
-          expression,
-        };
-      }
-      prevPosition.push(expression);
-    },
+    }
+    prevPosition.push(expression);
+  }
+
+  traverse(originalAST, {
+    handleNumberLiteral: (node, _parent) => handleNumberLiteral(node, position),
+    handleCallExpression,
   });
 
   return jsAST;
 }
 
-function handleNumberLiteral(
+export function handleNumberLiteral(
   node: NumberLiteralNode,
   position: JSASTNode[]
 ): void {
