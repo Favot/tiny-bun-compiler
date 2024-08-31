@@ -1,7 +1,16 @@
+import type {
+  ASTNode,
+  CallExpressionNode,
+  JSASTNode,
+  JSNumericLiteralNode,
+  JSProgramNode,
+  NumberLiteralNode,
+  ProgramNode,
+} from "../type";
 import { traverse } from "./traverse";
 
-export function transformer(originalAST: any): any {
-  const jsAST = {
+export function transformer(originalAST: ProgramNode) {
+  const jsAST: JSProgramNode = {
     type: "Program",
     body: [],
   };
@@ -9,13 +18,10 @@ export function transformer(originalAST: any): any {
   let position = jsAST.body;
 
   traverse(originalAST, {
-    NumberLiteral(node: any) {
-      position.push({
-        type: "NumericLiteral",
-        value: node.value,
-      });
+    NumberLiteral(node: NumberLiteralNode) {
+      handleNumberLiteral(node, position);
     },
-    CallExpression(node: any, parent: any) {
+    CallExpression(node: CallExpressionNode, parent: ASTNode) {
       let expression = {
         type: "CallExpression",
         callee: {
@@ -37,4 +43,15 @@ export function transformer(originalAST: any): any {
   });
 
   return jsAST;
+}
+
+function handleNumberLiteral(
+  node: NumberLiteralNode,
+  position: JSASTNode[]
+): void {
+  const numericLiteralNode: JSNumericLiteralNode = {
+    type: "NumericLiteral",
+    value: node.value,
+  };
+  position.push(numericLiteralNode);
 }

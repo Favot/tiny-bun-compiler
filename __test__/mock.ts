@@ -1,4 +1,4 @@
-import type { ProgramAST, Token } from "../src/type";
+import type { JSProgramNode, ProgramAST, Token } from "../src/type";
 
 export const userInput = "(add 2 (sub 4 3))";
 
@@ -71,7 +71,7 @@ export const expectedParsedOutput: ProgramAST = {
   ],
 };
 
-export const expectedTransformedOutput = {
+export const expectedTransformedOutput: JSProgramNode = {
   type: "Program",
   body: [
     {
