@@ -4,7 +4,7 @@ export const userInput = "(add 2 (sub 4 3))";
 
 export const expectedTokensOutput: Token[] = [
   {
-    type: "paren",
+    type: "parenthesis",
     value: "(",
   },
   {
@@ -16,7 +16,7 @@ export const expectedTokensOutput: Token[] = [
     value: "2",
   },
   {
-    type: "paren",
+    type: "parenthesis",
     value: "(",
   },
   {
@@ -32,11 +32,11 @@ export const expectedTokensOutput: Token[] = [
     value: "3",
   },
   {
-    type: "paren",
+    type: "parenthesis",
     value: ")",
   },
   {
-    type: "paren",
+    type: "parenthesis",
     value: ")",
   },
 ];

@@ -1,4 +1,4 @@
-export type TokenType = "paren" | "name" | "number";
+export type TokenType = "parenthesis" | "name" | "number";
 
 export type Token = {
   type: TokenType;

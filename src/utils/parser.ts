@@ -9,7 +9,7 @@ export function parser(tokens: any): any {
         value: token.value,
       };
     }
-    if (token.type === "paren" && token.value === "(") {
+    if (token.type === "parenthesis" && token.value === "(") {
       token = tokens[++current];
       const expression = {
         type: "CallExpression",
