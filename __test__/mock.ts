@@ -1,4 +1,4 @@
-import type { Token } from "../src/type";
+import type { ProgramAST, Token } from "../src/type";
 
 export const userInput = "(add 2 (sub 4 3))";
 
@@ -41,7 +41,7 @@ export const expectedTokensOutput: Token[] = [
   },
 ];
 
-export const expectedParsedOutput = {
+export const expectedParsedOutput: ProgramAST = {
   type: "Program",
   body: [
     {

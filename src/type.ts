@@ -5,36 +5,25 @@ export type Token = {
   value: string;
 };
 
-export type Expression = NumberLiteral | SimpleCallExpression;
+export type ASTNodeType = "Program" | "NumberLiteral" | "CallExpression";
 
-export type NumberLiteral = {
-  type: "NumberLiteral";
+export interface ASTNodeBase<T extends ASTNodeType> {
+  type: T;
+}
+
+export interface NumberLiteralNode extends ASTNodeBase<"NumberLiteral"> {
   value: string;
-};
+}
 
-export type SimpleCallExpression = {
-  type: "CallExpression";
+export interface CallExpressionNode extends ASTNodeBase<"CallExpression"> {
   name: string;
-  params: Expression[];
-};
+  params: ASTNode[];
+}
 
-export type DetailedCallExpression = {
-  type: "CallExpression";
-  callee: { type: string; name: string };
-  arguments: JSAstBody[];
-};
+export interface ProgramNode extends ASTNodeBase<"Program"> {
+  body: ASTNode[];
+}
 
-export type ExpressionStatement = {
-  type: "ExpressionStatement";
-  expression: DetailedCallExpression;
-};
+export type ASTNode = NumberLiteralNode | CallExpressionNode | ProgramNode;
 
-export type JSAstBody =
-  | NumberLiteral
-  | DetailedCallExpression
-  | ExpressionStatement;
-
-export type JSAst = {
-  type: string;
-  body: JSAstBody[];
-};
+export type ProgramAST = ProgramNode;
