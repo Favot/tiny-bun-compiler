@@ -1,4 +1,4 @@
-export function parser(tokens: any) {
+export function parser(tokens: any): any {
   let current = 0;
   function walk() {
     let token = tokens[current];

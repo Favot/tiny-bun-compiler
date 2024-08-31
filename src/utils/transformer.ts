@@ -1,6 +1,6 @@
 import { traverse } from "./traverse";
 
-export function transformer(originalAST: any) {
+export function transformer(originalAST: any): any {
   const jsAST = {
     type: "Program",
     body: [],
