@@ -2,6 +2,8 @@ import type {
   ASTNode,
   CallExpressionNode,
   JSASTNode,
+  JSCallExpressionNode,
+  JSExpressionStatementNode,
   JSNumericLiteralNode,
   JSProgramNode,
   NumberLiteralNode,
@@ -15,10 +17,13 @@ export function transformer(originalAST: ProgramNode) {
     body: [],
   };
 
-  let position = jsAST.body;
+  let position: JSASTNode[] = jsAST.body;
 
-  function handleCallExpression(node: CallExpressionNode, parent: ASTNode) {
-    let expression = {
+  function handleCallExpression(
+    node: CallExpressionNode,
+    parent: ASTNode | null
+  ) {
+    let expression: JSCallExpressionNode | JSExpressionStatementNode = {
       type: "CallExpression",
       callee: {
         type: "Identifier",
@@ -26,20 +31,23 @@ export function transformer(originalAST: ProgramNode) {
       },
       arguments: [],
     };
+
     const prevPosition = position;
     position = expression.arguments;
-    if (parent.type !== "CallExpression") {
+
+    if (parent && parent.type !== "CallExpression") {
       expression = {
         type: "ExpressionStatement",
         expression,
       };
     }
+
     prevPosition.push(expression);
   }
 
   traverse(originalAST, {
     handleNumberLiteral: (node, _parent) => handleNumberLiteral(node, position),
-    handleCallExpression,
+    handleCallExpression: (node, parent) => handleCallExpression(node, parent),
   });
 
   return jsAST;
